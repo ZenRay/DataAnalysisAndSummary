@@ -32,6 +32,8 @@ library(dplyr)
 library(tidyr)
 library(reshape2)
 library(gridExtra)
+library(memisc)
+library(GGally)
 ```
 
 ```{r echo=FALSE, Load_the_Data}
@@ -180,11 +182,12 @@ ggplot(aes(x=DateMonth, y=value), data= Loaninfo) +
 ### 1.Prosper平台状况
 
 分析Prosper平台上2005年11月至2014年3月份期间的借款额，从Fig 1每月借款额的变化和Fig 2每月交易数量展示结果：
+
 1. 整体趋势上，每月的借款额在增加。到2014年1月至2014年3月出现了借款总额快速降低的趋势(降低了近5亿)，同时交易数量也快速萎缩
 
 2. 在2008年10月至2009年8月期间，线段平滑下降。经证实该平台发生了暂停交易，对平台交易可能存在影响；3)2009年8月至2013年10月是Prosper平台高速发展对阶段。从Fig 3每月借款对其他其他统计信息来看，平台的借款额表现还是比较优异——平均借款额的趋势也是在2009年3月之后开始快速提高，另外在小额借款一直发展缓慢，但是在6000以上的借款额度发展比较快速；在2013年10月之后小额借款快速发展。
 
-```{r echo=FALSE, message=FALSE, warning=FALSE, borrower_info}
+```{r echo=FALSE, message=FALSE, warning=FALSE}
 p1 <- ggplot(aes(IncomeRange), data=rawprosper) +
     geom_bar(fill="grey") +
     labs(x="Income Range",y="Frequency", title="Fig 4 Income Range About Borrower") +
@@ -251,7 +254,7 @@ ggplot(aes(reorder(Occupation, rep(1, length(Occupation)), sum)), data=subset(ra
 
 ### 2.借款人发生借款时的信息侧写
 
-从借款人的收入情况，开始借款的借款额度，Prosper的信用评级、借款人的工作时间，借款人借款时的工作状态、收入债务比以及职务分类等方面进行了分析，可以发现以下信息：
+从借款人的收入情况，开始借款的借款额度，Prosper的信用评级、借款人的工作时间，借款人借款时的工作状态、债务收入比以及职务分类等方面进行了分析，可以发现以下信息：
 
 1. 借款人收入情况 从Fig 4 收入范围分布和Fig 9 收入债务比中分析，显示在借款时的收入主要是收入在24,999以下的，另一方面中等收入(收入在50,000至99,999范围内)的借款也相对较高。推测在中等收入借款较高，可能和消费观念有关
 
@@ -259,7 +262,7 @@ ggplot(aes(reorder(Occupation, rep(1, length(Occupation)), sum)), data=subset(ra
 
 3. Prosper信用评级方面 借款人的信用评级主要集中HR、E、D、C以及B之间，而在优质等级(A和AA)中发生借款的人数相对较少。可能是Prosper平台的信用评级较严格，这样可以提供一个良好的参数以方便投资人的投资选择。针对这个参数的参考，需要继续分析
 
-4. 借款人工作情况 从Fig 7借款人工作实线和Fig 8借款人借款状态来看，主要借款人是有工作的——全职工作人员和被雇佣的人员借款次数角度。同时在工作时限上，可以看出工作了0——10年的借款人比较集中，因为这个时期恰好是身份转换等身份条件变化的时期。
+4. 借款人工作情况 从Fig 7借款人工作实线和Fig 8借款人借款状态来看，主要借款人是有工作的——全职工作人员和被雇佣的人员借款频次高。同时在工作时限上，可以看出工作了0——10年的借款人比较集中，因为这个时期恰好是身份转换等身份条件变化的时期。
 
 5. 借款人职务 从Fig 10展示的借款人的职务来看，职务信息不是很全面。因为在选择职务为Other的借款人明显偏多，不具有显著对分析作用。针对这一点，涉及到个人隐私等方面的问题。但是从其他数据职务数据来看受教育的借款人员——教授、编程工作人员、行政人员等，发生借款次数较多
 
@@ -426,7 +429,7 @@ rawprosper %>%
 ```
 
 ### 3. 不同收入水平的债务收入比分析
-从Fig 18不同收入水平的收入和债务收入比的Violin图、Fig 19的直方图以及分析数据中，可以看出有大部分的借款人都能将债务收入比控制在0.15至0.3之间——从借款人和投资人的角度来说，能够良好的控制债务收入的关系才是获取稳健投资和借款的可能性。但是在Fig 19中表现出了一个明显的问题，未工作的借款人和高收入者(收入超过100,000)中存在债务收入比超过10的借款人，虽然总体数量偏少(交易数量有272笔——其中高收入高债务比的借款人交易数为187，而未工作高债务比的借款人交易数为24)。可能高收入者的高债务比是临时性的，但是从投资角度都需要警惕此类交易行为。
+从Fig 18不同收入水平的收入和债务收入比的Violin图、Fig 19的直方图以及分析数据中，可以看出有大部分的借款人都能将债务收入比控制在0.15至0.3之间——从借款人和投资人的角度来说，能够良好的控制债务收入的关系才是获取稳健投资和借款的可能性。但是在Fig 19中表现出了一个明显的问题，未工作的借款人和高收入者(收入超过100,000)中存在债务收入比超过10的借款人，虽然总体数量偏少(交易数量有272笔——其中高收入高债务比的借款人交易数为187，而未工作高债务比的借款人交易数为24)。高收入者的高债务比可能是发生了临时性借款，但是从投资角度都需要警惕此类交易行为。
 
 ```{r ehco=FALSE, message=FALSE,warning=FALSE, loanamount_term}
 ggplot(aes(LoanOriginalAmount), data=rawprosper) +
@@ -486,7 +489,7 @@ ggplot(aes(x=EmploymentStatusDuration/12, y=DebtToIncomeRatio), data=rawprosper)
   geom_line(stat="summary", fun.y=median, color="green", linetype=2) +
   my_theme +
   labs(x="Employment Duratiuon(Year)", y="Debt To Income Ratio",
-       title="Employment Duration And Debet Ratio(Mean Ratio)")
+       title="Employment Duration And Debet Ratio(Mean & Median Ratio)")
 ```
 
 
@@ -496,7 +499,7 @@ ggplot(aes(x=3 * round(EmploymentStatusDuration/3)/12, y=DebtToIncomeRatio), dat
   geom_line(stat="summary", fun.y=median, color="green", linetype=2) +
   my_theme +
   labs(x="Employment Duratiuon(Year)", y="Debt To Income Ratio",
-       title="Employment Duration And Debet Ratio(3 Months Mean Ratio)")
+       title="Employment Duration And Debet Ratio(3 Months Mean & Median Ratio)")
 ```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, employmentduration_debetratio_mean_3months}
@@ -505,10 +508,10 @@ ggplot(aes(x=round(EmploymentStatusDuration/12), y=DebtToIncomeRatio), data=rawp
   geom_line(stat="summary", fun.y=median, color="green", linetype=2) +
   my_theme +
   labs(x="Employment Duratiuon(Year)", y="Debt To Income Ratio",
-       title="Employment Duration And Debet Ratio(12 Months Mean Ratio)")
+       title="Employment Duration And Debet Ratio(12 Months Mean & Median Ratio)")
 ```
 
-```{r echo=FALSE, correlation debetincomeratio_employmentduration}
+```{r echo=FALSE, correlation_debetincomeratio_employmentduration}
 with(data=subset(rawprosper, !is.na(DebtToIncomeRatio) & !is.na(EmploymentStatusDuration)),
     cor.test(DebtToIncomeRatio, EmploymentStatusDuration))
 ```
@@ -535,7 +538,7 @@ with(data=rawprosper, cor.test(Investors, LoanOriginalAmount))
 投资人人数和借款额度的相关系数达到了0.381，而且随着投资额度的增加，表现出需要投资人数也增加。因为这样不仅降低了投资人的风险，而且满足了借款人的高额借款的需求。
 
 ## 多变量分析
-针对单变量分析和双变量分析，已经了解了借款额度、债务收入比、工作时限以及不同信用水平相关的大致关系。Prosper平台的借款人总体能够控制好个人的债务比率，这个和工作时限和收入水平表现上没有太多的异常——但是在某些个人借款中确实存在债务过高。接下来需要从信用得分、收入水平以及预期投资回报等方面，进行细致分析投资可行性。
+针对单变量分析和双变量分析，已经了解了借款额度、债务收入比、工作时限以及不同信用水平相关的大致关系。Prosper平台的借款人总体能够控制好个人的债务比率，这个和工作时限和收入水平表现上没有太多的异常——但是在某些个人借款中确实存在债务过高。接下来需要从信用等级、收入水平以及预期投资回报等方面，进行细致分析投资可行性。
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, loss_return_creditrate_point}
 # estimated loss and return about different rate and different year
@@ -598,35 +601,44 @@ ggplot(mapping=aes(LoanOriginalAmount, MonthlyLoanPayment), data=rawprosper) +
          title="Fig 28 Orignal Loan Amount Monthly Payment In Different Rate")
 ```
 
-### 3.不同借款利率和每月还款额级借款额度
+### 3.不同借款利率和每月还款额及借款额度
 对借款利率、每月还款数和借款额度进行分析，如Fig 28显示，总体上来看随着借款额度的增加，借款人每月还款额也是相应增大，同时在一定的每月还款额和借款额度上，体现出了借款利率越低每月还款额越少——这是因为低利率情况下，产生的利息越低。其中选择借款利率在[0.3,0.4)范围内的，表现出是单一线性递增的特性。
-
-# Univariate Plots Section
-```{r echo=FALSE, Univariate_Plots}
-
+```{r echo=FALSE, message=FALSE, warning=FALSE,variable_stat_create_sample_data}
+set.seed(201710)
+testdata <- subset(rawprosper, select=
+                     c("EstimatedLoss", "EstimatedReturn","EmploymentStatus",
+                       "TradesNeverDelinquentPercentage","LoanOriginalAmount",
+                       "InvestmentFromFriendsCount","BorrowerRate", 
+                       "IncomeRange","AvailableBankcardCredit", "Investors", 
+                       "TotalTrades","DebtToIncomeRatio", "EmploymentStatusDuration", 
+                       "StatedMonthlyIncome", "ProsperRatingNumeric",
+                       "CurrentCreditLines", "ProsperScore"))
+testdata <- testdata[sample(1:length(testdata$EstimatedLoss), 1000),]
 ```
 
-
-
-# Multivariate Plots Section
-
-```{r echo=FALSE, Multivariate_Plots}
-
+```{r echo=FALSE, fig.height=8, fig.width=9, message=FALSE, warning=FALSE}
+ggpairs(testdata)
 ```
 
-# Multivariate Analysis
+## 线性拟合
+根据随机抽取数据集中1000个观测值，分析变量中的相关性。发现预计对投资收益和损失有强相关性的变量有ProsperScore，LoanOriginalAmount，ProsperRatingNumeric，BorrowerRate，Investors。针对以上几个变量和投资收益进行线性分析。
 
-### Talk about some of the relationships you observed in this part of the investigation. Were there features that strengthened each other in terms of looking at your feature(s) of interest?
+```{r echo=FALSE, message=FALSE, warning=FALSE,linear_analysis}
+lm_1 <- lm(EstimatedReturn~EstimatedLoss, data=rawprosper)
+lm_2 <- update(lm_1, ~. + ProsperScore)
+lm_3 <- update(lm_2, ~. + LoanOriginalAmount)
+lm_4 <- update(lm_3, ~. + ProsperRatingNumeric)
+lm_5 <- update(lm_4, ~. + BorrowerRate)
+lm_6 <- update(lm_5, ~. + Investors)
+mtable(lm_1, lm_2, lm_3, lm_4, lm_5, lm_6)
+```
 
-### Were there any interesting or surprising interactions between features?
+### 线性拟合结论
+从线性分析的结果来看，投资收益在Prosper信用评分上总体是表现越高得分收益越高，但是随着其他因素的加入，表现不是反而出现负斜率关系。这个在分析贷款总额和信用等级时，有同样的影响——并不是高等级会高额借款。其中借款利率表现的参数作用比较优异，它和借款额度进行分析时也出现相似结果。但是在其他做投资收益分析参数，表现并不是很突出。因为该线性分析只是大概的分析，对分类型数据，如收入范围暂，时没有进行分析。所以如果要深入分析，需要利用其他工具再分析。
 
-### OPTIONAL: Did you create any models with your dataset? Discuss the strengths and limitations of your model.
+# 总结
 
-------
-
-# Final Plots and Summary
-
-### Plot One
+### Fig A
 ```{r echo=FALSE, message=FALSE, warning=FALSE, employmentduration_debetratio_statinfo}
 legend_name <- c("Mean Ratio", "95% Quantile Ratio", "Median Ratio", "25% Quantile Ratio")
 legend_color <- c("#FF8C00", "#DC143C", "#0000FF", "#32CD32")
@@ -645,11 +657,11 @@ ggplot(aes(x=round(EmploymentStatusDuration/12), y=DebtToIncomeRatio), data=rawp
        title="Fig A Employment Duration And Debet Ratio(More Info)")
 ```
 
-### Description One
+### Fig A结论
+Fig A 展示了工作不同工作年限，借款人对个人的债务收入比的控制情况。从以上的面积图可以看出，大部分的借款人的债务收入比都是控制在0.6以内——这点在属于正常工作年限内的借款人表现明显。控制债务收入比的方面，并没有因为工作年限表现出很大太大差异，都是相对稳定的。但是在退休后的借款人出现较大波动。
 
-
-### Plot Two
-```{r echo=FALSE, message=FALSE, warning=FALSE, loss_return_creditrate_year_point}
+### Fig B展示
+```{r echo=FALSE, fig.height=6, fig.width=5, message=FALSE, warning=FALSE}
 ggplot(aes(EstimatedLoss, EstimatedReturn), data=subset(rawprosper_year, ProsperRatingAlpha != "NA")) +
   geom_point(aes(color=ProsperRatingAlpha), position="jitter", alpha=.6) +
   scale_colour_brewer(palette="Set1") +
@@ -661,25 +673,29 @@ ggplot(aes(EstimatedLoss, EstimatedReturn), data=subset(rawprosper_year, Prosper
         legend.title=element_text(size=10,color="#006400"))
 ```
 
-### Description Two
-2. 从Fig 25不同年份的分布来看，确实如预期一样——因为是初期建立评级制度，高信用等级的借款人的收益反而没有次等级的借款人的收益高。但是随着时间的变化，高等级低收益并没有继续出现。另一方面随着时间的变化，预期收益率却是向0.05-0.15之间收拢。
+### Fig B结论
+从以上图形中，不同年份的分布来看，确实如预期一样——因为是2009年初期建立评级制度，高信用等级的借款人的收益反而没有次等级的借款人的收益高。但是随着时间的变化，高等级低收益并没有继续出现。另一方面随着时间的变化，预期收益率却是向0.05-0.15之间收拢。
 
-### Plot Three
-```{r echo=FALSE, Plot_Three}
+
+### Fig C 展示
+```{r echo=FALSE, fig.height=5, fig.width=6, message=FALSE, warning=FALSE, paged.print=FALSE}
 getPalette <-  colorRampPalette(brewer.pal(12, "Paired"))
 color_value <- c("#b15928", "#ffff99", "#6a3d9a", "#e31a1c", "#ff7f00", "#fdbf6f", 
                 "#cab2d6", "#fb9a99", "#33a02c", "#b2df8a", "#1f78b4", "#a6cee3")
-ggplot(mapping=aes(LoanOriginalAmount, MonthlyLoanPayment), data=rawprosper_year) +
+
+ggplot(mapping=aes(LoanOriginalAmount, MonthlyLoanPayment),
+       data=subset(rawprosper_year, Year %in% 
+                     c("2009", "2010", "2011", "2012", "2013", "2014"))) +
   geom_point(aes(color=LoanStatus), alpha=.3) +
   scale_color_manual(values=color_value,
                      # fix the legend title
-                     guide=guide_legend(title="Borrower Rate Range")) + 
+                    guide=guide_legend(title="Borrower Rate Range")) + 
   my_theme +
   theme(legend.position="bottom", legend.key.height=unit(.5, "cm"),
         legend.title=element_text(size=7,color="#006400"),
         legend.text=element_text(size=6)) +
   labs(x="Loan Original Amount", y="Monthly Loan Payment",
-         title="Fig C Loan Amount & Monthly Loan Payment In Various Year & Term") +
+       title="Fig C Loan Amount & Monthly Loan Payment In Various Year & Term") +
   facet_grid(Year~Term) +
   scale_y_sqrt()
 ```
@@ -691,17 +707,38 @@ rawprosper_year %>%
   summarise(Number = n()) %>%
   spread(key=LoanStatus, value=Number)
 ```
-将时间纳入分析范畴(Fig 29)，发现随着时间变化AA级账户总体借款额度都偏低，同时借款利率偏高；另一方面，低等级用户反而更容易获得低利率，二缺随着时间变化，借款额度在不断提升，其中D级和C级表现明显。最优级借款人尽在2009年得到过低借款率，但是都保持在0.2左右。而A级基本都是在低利率，高借款额度
-* 分析可能是平台的主要激励措施还是针对高额度借款用户，同时保有稳定的A级优质借款人。但是可能存在最优级用户的流失风险——需要通过了解Prosper平台的经营方针进行验证
-### Description Three
 
+### Fig C结论
+* 在2009年至2014年中，借款发生延期的比例还是很少的。管理措施还是相对得当的，大部分借款账目都是还清了借款或者提前还清了借款。
+
+### Fig D展示
+```{r echo=FALSE, fig.height=3, message=FALSE, warning=FALSE}
+ggplot(aes(1000*round(LoanOriginalAmount/1000), BorrowerRate),
+       data=subset(rawprosper_year, ProsperRatingAlpha != "NA")) +
+  geom_line(stat="summary", fun.y=mean, aes(color=ProsperRatingAlpha)) +
+  scale_color_brewer(palette="Set1", direction = -1) +
+  labs(x="Loan Original Amount(Within 1000)", y="Mean Borrower Rate",
+  title="Fig D Borrower Rate & Different Credit Rate & Loan Amount In various Year") +
+  my_theme +
+  theme(legend.position="bottom", legend.key.height=unit(.5, "cm"),
+        legend.title=element_text(size=10,color="#006400")) +
+  facet_grid(Year~.) +
+  scale_x_continuous(limits=c(0, 35000), breaks=seq(0, 35000, 2000))
+```
+
+### Fig D结论
+
+* 将时间纳入分析范畴分析(Fig C)，发现随着时间变化AA级账户总体借款额度都偏低，同时借款利率偏高；另一方面，低等级用户反而更容易获得低利率，二缺随着时间变化，借款额度在不断提升，其中D级和C级表现明显。最优级借款人尽在2009年得到过低借款率，但是都保持在0.2左右。而A级基本都是在低利率，高借款额度
+
+* 从结果推测可能是平台的主要激励措施还是针对高额度借款用户，同时保有稳定的A级优质借款人。但是可能存在最优级用户的流失风险——需要通过了解Prosper平台的经营方针进行验证
+
+* 随着时间的变化，没有发生低于2000的小额贷款
 ------
 
-# Reflection
-# 总结
+
 本次分析从分析借款人的特征开始分析，到借款额度、收益等变量分析，最终是为了认识在Prosper平台选择合适的投资可以选择的可行的参考参数。本次分析的结果主要如下：
 1. 从2005年11月分至2014年3月，Prosper平台发展总体是稳步上升——虽然2009年因客观原因发生了业务暂停。但是进入2014年后，交易数量和交易额度都在出现了急剧下降，从当时来看需要加强关注该平台的经营策略和方针，以确认是否需要调整投资策略
-2. 借款人总体都能控制好个人的债务收入比例，但是借款的收入表现并不是很理想——主要的借款人集中在低收入或者没有收入的借款人，并且高收入者借款额度都偏低。从Fig 31各年度的债务状态来看，总体还款请款还是比较理想；另外也表现出选择中期还款策略的借款人角度，而在2011年之后选择长期债务的人数也在增加
+2. 借款人总体都能控制好个人的债务收入比例，但是借款的收入表现并不是很理想——主要的借款人集中在低收入或者没有收入的借款人，并且高收入者借款额度都偏低。从Fig C各年度的债务状态来看，总体还款请款还是比较理想；另外也表现出选择中期还款策略的借款人角度，而在2011年之后选择长期债务的人数也在增加
 3. 信用等级对借款利率并没有表现出优势，反而在次高级和中等信用的用户具有低借款利率优势
 4. 投资人数，整体表现出随着借款额度增加投资人数也增加的趋势
 
